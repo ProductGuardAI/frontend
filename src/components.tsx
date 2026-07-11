@@ -96,7 +96,7 @@ export function Shell({ children }: { children: ReactNode }) {
             [PlusCircle, "New submission", "/products/new", ""],
             [ClipboardList, "Tasks", "/products?view=tasks", "tasks"],
             [BarChart3, "Reports", "/dashboard?view=reports", "reports"],
-            [FlaskConical, "Demo mode", "/demo", ""],
+            ...(import.meta.env.VITE_DEMO_MODE === "true" ? [[FlaskConical, "Demo mode", "/demo", ""]] : []),
             [Settings, "Settings", "/settings", ""],
           ].map(([I, l, p, view]: any) => (
             <NavLink key={p} to={p} className={({isActive})=>isActive&&((view&&new URLSearchParams(loc.search).get("view")===view)||(!view&&!loc.search))?"active":""} onClick={() => setOpen(false)}>
