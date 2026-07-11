@@ -40,9 +40,11 @@ export default function ReviewPage() {
   const q = useLoad(() => api<Product>(`/products/${id}`), [id]);
   const [tab, setTab] = useState("Overview");
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
   const [modal, setModal] = useState("");
 
   const act = async (action: string, notes = "") => {
+    setError("");
     try {
       await post(`/products/${id}/review`, {
         action,
@@ -53,9 +55,11 @@ export default function ReviewPage() {
       setNotice(`${human(action)} recorded`);
       setModal("");
       q.reload();
-      setTimeout(() => setNotice(""), 3000);
-    } catch (err) {
+      setTimeout(() => setNotice(""), 4000);
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || `Failed to perform action: ${action}`);
+      setTimeout(() => setError(""), 6000);
     }
   };
 
@@ -70,6 +74,12 @@ export default function ReviewPage() {
         <div className="toast">
           <CheckCircle2 />
           {notice}
+        </div>
+      )}
+      {error && (
+        <div className="toast" style={{ backgroundColor: '#a42335' }}>
+          <ShieldAlert />
+          {error}
         </div>
       )}
       <div className="review-head">

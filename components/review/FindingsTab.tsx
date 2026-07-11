@@ -15,8 +15,9 @@ export function FindingsTab({ p, reload }: { p: Product; reload: () => void }) {
       try {
         await post(`/findings/${id}/${kind}`, { note, role: "compliance_reviewer" });
         reload();
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
+        alert(err.message || `Failed to ${kind} finding`);
       }
     }
   };
@@ -84,8 +85,9 @@ export function FindingsTab({ p, reload }: { p: Product; reload: () => void }) {
                     try {
                       await patch(`/findings/${f.id}`, { reviewerNote });
                       reload();
-                    } catch (err) {
+                    } catch (err: any) {
                       console.error(err);
+                      alert(err.message || "Failed to update note");
                     }
                   }
                 }}
