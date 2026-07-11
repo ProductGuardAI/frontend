@@ -1,0 +1,249 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { UploadCloud, FileText, X, ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { api } from '@/components/api';
+import type { Product } from '@/components/types';
+
+const allowed = [
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/csv',
+  'text/plain',
+];
+
+export function validateFiles(incoming: File[], existing: File[] = []) {
+  const names = new Set(existing.map((f) => `${f.name}-${f.size}`));
+  const valid: File[] = [];
+  const errors: string[] = [];
+
+  for (const f of incoming) {
+    if (!allowed.includes(f.type)) {
+      errors.push(`${f.name}: unsupported file type`);
+    } else if (f.size > 15 * 1024 * 1024) {
+      errors.push(`${f.name}: exceeds 15 MB`);
+    } else if (names.has(`${f.name}-${f.size}`)) {
+      errors.push(`${f.name}: duplicate file`);
+    } else {
+      valid.push(f);
+      names.add(`${f.name}-${f.size}`);
+    }
+  }
+
+  return { valid, errors };
+}
+
+export default function NewProduct() {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    brand: '',
+    supplier: '',
+    category: 'Skincare',
+    subcategory: '',
+    targetMarket: 'Vietnam',
+    countryOfOrigin: '',
+    internalOwner: 'Demo Reviewer',
+    notes: '',
+  });
+
+  const pick = (incoming: File[]) => {
+    const r = validateFiles(incoming, files);
+    setFiles((v) => [...v, ...r.valid]);
+    setErrors(r.errors);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErrors([]);
+    try {
+      const p = await api<Product>('/products', {
+        method: 'POST',
+        body: JSON.stringify(form),
+      });
+
+      if (files.length) {
+        const data = new FormData();
+        files.forEach((f) => data.append('files', f));
+        await api(`/products/${p.id}/documents`, {
+          method: 'POST',
+          body: data,
+        });
+        await api(`/products/${p.id}/process`, {
+          method: 'POST',
+          body: JSON.stringify({}),
+        });
+        router.push(`/products/${p.id}/processing`);
+      } else {
+        router.push(`/products/${p.id}`);
+      }
+    } catch (err) {
+      setErrors([err instanceof Error ? err.message : 'Could not create product']);
+      setBusy(false);
+    }
+  };
+
+  const fieldList = [
+    ['name', 'Product name *'],
+    ['brand', 'Brand *'],
+    ['supplier', 'Supplier *'],
+    ['subcategory', 'Subcategory'],
+    ['countryOfOrigin', 'Country of origin'],
+    ['internalOwner', 'Internal owner'],
+  ] as const;
+
+  return (
+    <>
+      <button className="back" onClick={() => router.back()}>
+        <ArrowLeft />
+        Back to products
+      </button>
+      <div className="page-head">
+        <div>
+          <p className="eyebrow">NEW ONBOARDING CASE</p>
+          <h1>Submit a product for review</h1>
+          <p>Add core details and supplier evidence. AI processing starts after submission.</p>
+        </div>
+      </div>
+      <form className="form-layout" onSubmit={submit}>
+        <div className="card form-card">
+          <div className="step-title">
+            <span>
+              <Check />
+            </span>
+            <div>
+              <h2>Product information</h2>
+              <p>Core details used for category requirement checks</p>
+            </div>
+          </div>
+          <div className="fields">
+            {fieldList.map(([k, l]) => (
+              <label key={k}>
+                {l}
+                <input
+                  required={l.includes('*')}
+                  value={(form as any)[k]}
+                  onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+                />
+              </label>
+            ))}
+            <label>
+              Category *
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {[
+                  'Skincare',
+                  'Haircare',
+                  'Cosmetics',
+                  'Personal care',
+                  'Supplements',
+                  'Medical devices',
+                  'General retail products',
+                ].map((x) => (
+                  <option key={x}>{x}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Target market *
+              <input
+                required
+                value={form.targetMarket}
+                onChange={(e) => setForm({ ...form, targetMarket: e.target.value })}
+              />
+            </label>
+            <label className="wide">
+              Notes
+              <textarea
+                rows={3}
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                placeholder="Marketing wording, product context, or special reviewer instructions"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="card form-card">
+          <div className="step-title">
+            <span>2</span>
+            <div>
+              <h2>Supporting documents</h2>
+              <p>PDF, PNG, JPG, DOCX, CSV or TXT · up to 15 MB each</p>
+            </div>
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            hidden
+            multiple
+            accept=".pdf,.png,.jpg,.jpeg,.docx,.csv,.txt"
+            onChange={(e) => pick(Array.from(e.target.files ?? []))}
+          />
+          <div
+            className="drop"
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              pick(Array.from(e.dataTransfer.files));
+            }}
+          >
+            <UploadCloud />
+            <strong>Drop supplier documents here</strong>
+            <p>or click to browse from your computer</p>
+            <button type="button" className="button secondary">
+              Select files
+            </button>
+          </div>
+          {files.map((f, i) => (
+            <div className="file" key={`${f.name}-${f.size}`}>
+              <span>
+                <FileText />
+              </span>
+              <div>
+                <strong>{f.name}</strong>
+                <small>{(f.size / 1024 / 1024).toFixed(2)} MB · Ready</small>
+              </div>
+              <button
+                type="button"
+                className="icon"
+                onClick={() => setFiles(files.filter((_, x) => x !== i))}
+              >
+                <X />
+              </button>
+            </div>
+          ))}
+          {errors.map((x) => (
+            <p className="field-error" key={x}>
+              {x}
+            </p>
+          ))}
+        </div>
+
+        <div className="submit-bar">
+          <div>
+            <strong>
+              {files.length} document{files.length !== 1 ? 's' : ''} selected
+            </strong>
+            <small>Duplicate and file safety checks enabled</small>
+          </div>
+          <button disabled={busy} className="button" type="submit">
+            {busy ? 'Creating case…' : 'Create & process'}
+            <ArrowRight />
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}

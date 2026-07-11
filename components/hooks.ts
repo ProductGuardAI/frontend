@@ -1,0 +1,21 @@
+import { useCallback, useEffect, useState } from 'react';
+
+export function useLoad<T>(loader: () => Promise<T>, deps: unknown[] = []) {
+  const [data, setData] = useState<T>();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    loader()
+      .then(setData)
+      .catch((e) => setError(e instanceof Error ? e.message : 'Unable to load'))
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  useEffect(load, [load]);
+
+  return { data, error, loading, reload: load, setData };
+}
