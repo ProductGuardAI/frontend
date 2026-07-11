@@ -4,7 +4,7 @@ import { Confidence } from "./Confidence";
 import { post, patch } from "@/components/api";
 import type { Product } from "@/components/types";
 
-export function FindingsTab({ p, reload }: { p: Product; reload: () => void }) {
+export function FindingsTab({ p, reload, user }: { p: Product; reload: () => void; user: { fullName?: string; role?: string } | null }) {
   const resolve = async (id: string, kind: string) => {
     const note =
       window.prompt(
@@ -13,7 +13,11 @@ export function FindingsTab({ p, reload }: { p: Product; reload: () => void }) {
       ) ?? "";
     if (note || window.confirm(`Continue without a note?`)) {
       try {
-        await post(`/findings/${id}/${kind}`, { note, role: "compliance_reviewer" });
+        await post(`/findings/${id}/${kind}`, { 
+          note, 
+          role: user?.role || "compliance_reviewer",
+          reviewerName: user?.fullName || "Demo Reviewer"
+        });
         reload();
       } catch (err: any) {
         console.error(err);

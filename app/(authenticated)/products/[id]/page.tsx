@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   CheckCircle2,
@@ -42,14 +42,26 @@ export default function ReviewPage() {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [modal, setModal] = useState("");
+  const [user, setUser] = useState<{ fullName?: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem('user');
+    if (userJson && userJson !== 'undefined') {
+      try {
+        setUser(JSON.parse(userJson));
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
 
   const act = async (action: string, notes = "") => {
     setError("");
     try {
       await post(`/products/${id}/review`, {
         action,
-        reviewerName: "Demo Reviewer",
-        role: "compliance_reviewer",
+        reviewerName: user?.fullName || "Demo Reviewer",
+        role: user?.role || "compliance_reviewer",
         notes,
       });
       setNotice(`${human(action)} recorded`);
@@ -152,7 +164,7 @@ export default function ReviewPage() {
         {tab === "Documents" && <DocumentsTab p={p} />}
         {tab === "Requirements" && <RequirementsTab p={p} />}
         {tab === "Claims" && <ClaimsTab p={p} />}
-        {tab === "Compliance findings" && <FindingsTab p={p} reload={q.reload} />}
+        {tab === "Compliance findings" && <FindingsTab p={p} reload={q.reload} user={user} />}
         {tab === "Activity" && <ActivityTab p={p} />}
       </div>
       {modal && (
