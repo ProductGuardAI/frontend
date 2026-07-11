@@ -22,8 +22,9 @@ export function DecisionModal({
       const v = (await post(`/products/${p.id}/clarification`)) as any;
       setGenerated(v.message);
       setNote(v.message);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || "Failed to generate clarification note");
     }
   };
 
