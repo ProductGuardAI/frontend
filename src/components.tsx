@@ -74,7 +74,28 @@ export function Spinner() {
 export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const loc = useLocation();
+
   const {language,setLanguage,t}=useLanguage();
+
+  const userJson = localStorage.getItem('user');
+  const user = userJson ? JSON.parse(userJson) : null;
+  const fullName = user?.fullName || 'Nhan Vien';
+  const role = user?.role || 'commercial_reviewer';
+
+  const initials = fullName
+    .split(' ')
+    .filter(Boolean)
+    .map((w: string) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'NV';
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
+
   return (
     <div className="app">
       <aside className={open ? "open" : ""}>
@@ -119,11 +140,37 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <div className="header-actions">
           <span className="notification"><Bell/><b>3</b></span>
-          <div className="reviewer"><span>NT</span>
-          <div>
-            Nguyen Tran<small>{t('Category Manager')}</small>
-          </div>
-          <ChevronDown size={16}/>
+          <div className="reviewer" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>{initials}</span>
+            <div>
+              {fullName}
+              <small>{t(human(role))}</small>
+            </div>
+            <button
+              onClick={logout}
+              style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                color: '#f87171',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                marginLeft: '8px',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                e.currentTarget.style.color = '#fff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                e.currentTarget.style.color = '#f87171';
+              }}
+            >
+              {t('Log out')}
+            </button>
           </div>
         </div>
       </header>
