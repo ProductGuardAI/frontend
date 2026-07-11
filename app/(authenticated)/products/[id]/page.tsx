@@ -153,7 +153,7 @@ export default function ReviewPage() {
           >
             {tName}
             {tName === "Compliance findings" && (
-              <b>{p.findings?.filter((x) => x.status === "open").length}</b>
+              <b>{p.findings?.filter((x) => ["open", "needs_human_review", "confirmed"].includes(x.status)).length}</b>
             )}
           </button>
         ))}

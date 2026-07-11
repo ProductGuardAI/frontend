@@ -7,7 +7,7 @@ export function OverviewTab({ p, onTab }: { p: Product; onTab: (s: string) => vo
   const missing =
     p.requirements?.filter((r) => r.mandatory && r.status !== "present") ?? [];
   const risks =
-    p.findings?.filter((f) => f.status === "open").slice(0, 4) ?? [];
+    p.findings?.filter((f) => ["open", "needs_human_review", "confirmed"].includes(f.status)).slice(0, 4) ?? [];
 
   return (
     <div className="overview-grid">
