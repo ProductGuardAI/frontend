@@ -13,14 +13,12 @@ interface AuthResponse {
 }
 
 export function Login() {
-  const [view, setView] = useState<'login' | 'register-request' | 'register-verify'>('login');
+  const [view, setView] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,38 +38,20 @@ export function Login() {
     }
   };
 
-  const handleRegisterRequest = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError('');
     try {
-      await api('/auth/register/request-otp', {
+      const data = await api<AuthResponse>('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, fullName }),
-      });
-      setSuccessMessage(`Yêu cầu OTP thành công! Kiểm tra logs trên console của server NestJS để lấy mã.`);
-      setView('register-verify');
-    } catch (err: any) {
-      setError(err.message || 'Không thể yêu cầu OTP đăng ký.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleRegisterVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      const data = await api<AuthResponse>('/auth/register/verify-otp', {
-        method: 'POST',
-        body: JSON.stringify({ email, password, otp }),
+        body: JSON.stringify({ email, password, fullName }),
       });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       window.location.href = '/dashboard';
     } catch (err: any) {
-      setError(err.message || 'Xác thực OTP thất bại.');
+      setError(err.message || 'Đăng ký tài khoản thất bại.');
       setBusy(false);
     }
   };
@@ -203,16 +183,6 @@ export function Login() {
           margin-bottom: 24px;
           line-height: 1.5;
         }
-        .success-alert {
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          border-radius: 8px;
-          color: #34d399;
-          padding: 12px;
-          font-size: 13.5px;
-          margin-bottom: 24px;
-          line-height: 1.5;
-        }
         .auth-footer {
           margin-top: 24px;
           text-align: center;
@@ -270,7 +240,6 @@ export function Login() {
         </div>
 
         {error && <div className="error-alert">{error}</div>}
-        {successMessage && <div className="success-alert">{successMessage}</div>}
 
         {view === 'login' && (
           <form onSubmit={handleLogin}>
@@ -310,15 +279,15 @@ export function Login() {
 
             <div className="auth-footer">
               Chưa có tài khoản?{' '}
-              <button type="button" className="auth-link" onClick={() => { setError(''); setSuccessMessage(''); setView('register-request'); }}>
+              <button type="button" className="auth-link" onClick={() => { setError(''); setView('register'); }}>
                 Đăng ký thành viên
               </button>
             </div>
           </form>
         )}
 
-        {view === 'register-request' && (
-          <form onSubmit={handleRegisterRequest}>
+        {view === 'register' && (
+          <form onSubmit={handleRegister}>
             <div className="form-group">
               <label>Họ và Tên</label>
               <div className="input-wrapper">
@@ -347,36 +316,8 @@ export function Login() {
               </div>
             </div>
 
-            <button type="submit" className="login-btn" disabled={busy}>
-              {busy ? <Loader2 className="spinner" size={18} /> : null}
-              {busy ? 'Đang gửi yêu cầu...' : 'Nhận mã OTP'}
-              {!busy ? <ArrowRight size={18} /> : null}
-            </button>
-          </form>
-        )}
-
-        {view === 'register-verify' && (
-          <form onSubmit={handleRegisterVerify}>
-            <p style={{ color: '#94a3b8', fontSize: '13.5px', marginTop: 0, marginBottom: 20, textAlign: 'center' }}>
-              Nhập mã OTP đã in ở console NestJS cùng mật khẩu bạn muốn đặt.
-            </p>
-
             <div className="form-group">
-              <label>Mã xác thực OTP</label>
-              <div className="input-wrapper">
-                <ShieldCheck size={18} />
-                <input
-                  type="text"
-                  placeholder="123456"
-                  required
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Mật khẩu mới</label>
+              <label>Mật khẩu</label>
               <div className="input-wrapper">
                 <KeyRound size={18} />
                 <input
@@ -392,7 +333,7 @@ export function Login() {
 
             <button type="submit" className="login-btn" disabled={busy}>
               {busy ? <Loader2 className="spinner" size={18} /> : null}
-              {busy ? 'Đang hoàn tất đăng ký...' : 'Xác nhận Đăng ký'}
+              {busy ? 'Đang khởi tạo tài khoản...' : 'Đăng ký tài khoản'}
               {!busy ? <ArrowRight size={18} /> : null}
             </button>
           </form>
