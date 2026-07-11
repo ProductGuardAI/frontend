@@ -16,6 +16,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useState } from "react";
+import {useLanguage} from "./i18n";
 export const human = (s: string) =>
   s.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
 export function Badge({
@@ -73,15 +74,20 @@ export function Spinner() {
 export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const loc = useLocation();
+  const {language,setLanguage,t}=useLanguage();
   return (
     <div className="app">
       <aside className={open ? "open" : ""}>
         <Link to="/dashboard" className="brand">
-          <div>
+          <div className="brand-logo">
             <strong>guardian</strong>
             <small>healthy beauty</small>
           </div>
-          <b>Vietnam</b>
+          <div className={`language-toggle ${language}`} role="group" aria-label={language==='vi'?'Chọn ngôn ngữ':'Select language'}>
+            <span aria-hidden="true"/>
+            <button type="button" title="Tiếng Việt" aria-label="Tiếng Việt" aria-pressed={language==='vi'} onClick={()=>setLanguage('vi')}>VI</button>
+            <button type="button" title="English" aria-label="English" aria-pressed={language==='en'} onClick={()=>setLanguage('en')}>EN</button>
+          </div>
         </Link>
         <nav>
           {[
@@ -95,13 +101,13 @@ export function Shell({ children }: { children: ReactNode }) {
           ].map(([I, l, p, view]: any) => (
             <NavLink key={p} to={p} className={({isActive})=>isActive&&((view&&new URLSearchParams(loc.search).get("view")===view)||(!view&&!loc.search))?"active":""} onClick={() => setOpen(false)}>
               <I size={19} />
-              {l}
+              {t(l)}
             </NavLink>
           ))}
         </nav>
         <div className="legal productguard-panel">
           <ShieldCheck size={25} />
-          <p><strong>ProductGuard AI</strong><br /><small>AI-Powered Compliance</small></p>
+          <p><strong>ProductGuard AI</strong><br /><small>{t('AI-Powered Compliance')}</small></p>
         </div>
       </aside>
       <header>
@@ -109,13 +115,13 @@ export function Shell({ children }: { children: ReactNode }) {
           {open ? <X /> : <Menu />}
         </button>
         <div>
-          {loc.pathname === "/dashboard" ? <div className="header-welcome"><small>Xin chào,</small><strong>Welcome to ProductGuard AI</strong></div> : <span className="crumb">Guardian / {human(loc.pathname.split("/").filter(Boolean).at(-1) ?? "Dashboard")}</span>}
+          {loc.pathname === "/dashboard" ? <div className="header-welcome"><small>{language==='vi'?'Xin chào,':'Hello,'}</small><strong>{t('Welcome to ProductGuard AI')}</strong></div> : <span className="crumb">Guardian / {t(human(loc.pathname.split("/").filter(Boolean).at(-1) ?? "Dashboard"))}</span>}
         </div>
         <div className="header-actions">
           <span className="notification"><Bell/><b>3</b></span>
           <div className="reviewer"><span>NT</span>
           <div>
-            Nguyen Tran<small>Category Manager</small>
+            Nguyen Tran<small>{t('Category Manager')}</small>
           </div>
           <ChevronDown size={16}/>
           </div>
