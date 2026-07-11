@@ -105,3 +105,42 @@ main{padding:32px 28px;max-width:none}.dashboard-page{display:grid;gap:20px}.das
 @media(max-width:700px){.demo-hero{align-items:flex-start;flex-direction:column;gap:14px}.demo-hero h1{font-size:22px}.demo-hero .button{width:100%}.scenario-heading{align-items:flex-start;flex-direction:column;gap:10px}.scenario-grid{grid-template-columns:1fr}.demo-flow{display:grid;grid-template-columns:1fr}.scenario-legend{flex-wrap:wrap}}
 .language-toggle{position:relative;display:grid;grid-template-columns:1fr 1fr;width:96px;height:38px;padding:3px;border-radius:999px;background:#fff;border:1px solid rgba(159,71,8,.18);box-shadow:0 4px 12px rgba(123,48,0,.14);overflow:hidden}.language-toggle>span{position:absolute;z-index:0;left:4px;top:4px;bottom:4px;width:44px;border-radius:999px;background:linear-gradient(135deg,#c75e05 0%,#fa8c16 62%,#ff9b3d 100%);box-shadow:0 3px 8px rgba(199,94,5,.24);transform:translateX(0);transition:transform .32s cubic-bezier(.22,1,.36,1),box-shadow .2s ease}.language-toggle.en>span{transform:translateX(44px)}.language-toggle button{position:relative;z-index:1;min-width:0;border:0;background:transparent;border-radius:999px;color:#9f4708;font-size:11px;font-weight:800;line-height:1;letter-spacing:.3px;cursor:pointer;transition:color .2s ease,opacity .2s ease}.language-toggle button[aria-pressed="true"]{color:#fff}.language-toggle button:not([aria-pressed="true"]):hover{color:#c75e05;background:#fff8f0}.language-toggle button:focus-visible{outline:2px solid #451b03;outline-offset:-3px}.language-toggle:active>span{box-shadow:0 2px 5px rgba(199,94,5,.22)}
 .brand{gap:10px}.brand-logo strong{font-size:28px}.brand-logo{padding-right:12px}
+
+/* Dashboard legibility and WCAG contrast pass */
+.app{color:#1c1917}
+.app .card,.app .stat,.app .submissions-card{color:#1c1917}
+.app .page-head p,.app .review-head p,.app .card-head p{color:#57534e}
+.app .header-welcome small{color:#44403c;font-weight:600}
+.app .reviewer{color:#1c1917}
+.app .reviewer small{color:#44403c;font-weight:700}
+.app .crumb{color:#57534e;font-weight:600}
+.app nav a{color:#fff;font-weight:700;text-shadow:0 1px 1px rgba(126,45,0,.18)}
+.app nav a.active,.app nav a:hover{color:#c2410c;text-shadow:none}
+.app .productguard-panel{background:rgba(124,45,18,.24)!important;border-color:rgba(255,255,255,.38)!important}
+.app .productguard-panel p,.app .productguard-panel strong{color:#fff}
+.app .productguard-panel small{color:#fff;opacity:1;font-weight:700}
+.dashboard-stat small{color:#374151;font-weight:650}
+.dashboard-stat strong{color:#111827}
+.dashboard-stat em{color:#c2410c;font-weight:750}
+.submissions-title h2{color:#c2410c}
+.dashboard-filters label small{color:#44403c;font-size:11px;font-weight:700}
+.dashboard-filters select{color:#292524;font-weight:650;border-color:#c7c2bd}
+.dashboard-filters .search{border-color:#c7c2bd;background:#fff}
+.dashboard-filters .search input{color:#1c1917;font-weight:550}
+.dashboard-filters .search input::placeholder{color:#57534e;opacity:1}
+.dashboard-table th{color:#44403c;font-size:10px;font-weight:800;letter-spacing:.45px;background:#f5f5f4}
+.dashboard-table td{color:#292524;font-weight:550}
+.dashboard-table .product-link strong{color:#111827;font-size:12px}
+.dashboard-table .product-link small,.dashboard-table td small{color:#57534e!important;font-size:10px;font-weight:600}
+.completion-ring b{color:#1c1917;font-weight:800}
+.risk-label{font-weight:800}
+.view-all{color:#c2410c;font-weight:800}
+.compact-activity .card-head h2{color:#1c1917}
+.compact-activity>div>span{background:#f5f5f4;border:1px solid #e7e5e4;color:#292524}
+.compact-activity>div>span strong{color:#1c1917}
+.compact-activity>div>span small{color:#57534e;font-weight:600}
+.app-footer{color:#57534e;font-weight:600}
+.app .button:disabled{background:#fed7aa;color:#7c2d12;opacity:1}
+.app input::placeholder,.app textarea::placeholder{color:#57534e;opacity:1}
+.app .badge{font-weight:850}
+@media(max-width:760px){.dashboard-stat small{color:#292524}.dashboard-filters label small{font-size:11px}.app-footer{color:#44403c}}

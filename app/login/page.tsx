@@ -7,10 +7,17 @@ import { api } from '@/components/api';
 
 interface AuthResponse { token: string; user: { id: string; email: string; fullName: string; role: string } }
 type View = 'login' | 'register';
+type Language = 'vi' | 'en';
+const copy = {
+  vi: { headline:'Th\u1ea9m \u0111\u1ecbnh s\u1ea3n ph\u1ea9m, \u0111\u01a1n gi\u1ea3n h\u01a1n.', promise:'AI h\u1ed7 tr\u1ee3 th\u1ea9m \u0111\u1ecbnh, gi\u00fap b\u1ea1n \u0111\u1ea3m b\u1ea3o tu\u00e2n th\u1ee7 nhanh ch\u00f3ng v\u00e0 ch\u00ednh x\u00e1c.', benefits:['Ki\u1ec3m tra h\u1ed3 s\u01a1 th\u00f4ng minh','Theo d\u00f5i tu\u00e2n th\u1ee7 r\u00f5 r\u00e0ng','Quy\u1ebft \u0111\u1ecbnh c\u00f3 ki\u1ec3m so\u00e1t'], language:'Ch\u1ecdn ng\u00f4n ng\u1eef', back:'Quay l\u1ea1i \u0111\u0103ng nh\u1eadp', welcome:'Ch\u00e0o m\u1eebng tr\u1edf l\u1ea1i', registerTitle:'B\u1eaft \u0111\u1ea7u c\u00f9ng ProductGuard AI', loginIntro:'\u0110\u0103ng nh\u1eadp \u0111\u1ec3 ti\u1ebfp t\u1ee5c quy tr\u00ecnh th\u1ea9m \u0111\u1ecbnh.', registerIntro:'T\u1ea1o t\u00e0i kho\u1ea3n \u0111\u1ec3 b\u1eaft \u0111\u1ea7u quy tr\u00ecnh th\u1ea9m \u0111\u1ecbnh s\u1ea3n ph\u1ea9m.', fullName:'H\u1ecd v\u00e0 t\u00ean', fullNamePlaceholder:'Nguy\u1ec5n V\u0103n A', identifier:'Email ho\u1eb7c s\u1ed1 \u0111i\u1ec7n tho\u1ea1i', email:'\u0110\u1ecba ch\u1ec9 email', identifierPlaceholder:'Nh\u1eadp email ho\u1eb7c s\u1ed1 \u0111i\u1ec7n tho\u1ea1i', emailPlaceholder:'tenban@congty.com', password:'M\u1eadt kh\u1ea9u', passwordPlaceholder:'Nh\u1eadp m\u1eadt kh\u1ea9u', newPasswordPlaceholder:'T\u1ed1i thi\u1ec3u 6 k\u00fd t\u1ef1', show:'Hi\u1ec7n m\u1eadt kh\u1ea9u', hide:'\u1ea8n m\u1eadt kh\u1ea9u', remember:'Ghi nh\u1edb \u0111\u0103ng nh\u1eadp', forgot:'Qu\u00ean m\u1eadt kh\u1ea9u?', login:'\u0110\u0103ng nh\u1eadp', register:'T\u1ea1o t\u00e0i kho\u1ea3n', loggingIn:'\u0110ang x\u00e1c th\u1ef1c...', registering:'\u0110ang t\u1ea1o t\u00e0i kho\u1ea3n...', noAccount:'Ch\u01b0a c\u00f3 t\u00e0i kho\u1ea3n?', registerLink:'\u0110\u0103ng k\u00fd th\u00e0nh vi\u00ean', loginError:'\u0110\u0103ng nh\u1eadp th\u1ea5t b\u1ea1i.', registerError:'\u0110\u0103ng k\u00fd t\u00e0i kho\u1ea3n th\u1ea5t b\u1ea1i.' },
+  en: { headline:'Product reviews, made simpler.', promise:'AI-assisted reviews help your team make faster, more accurate compliance decisions.', benefits:['Intelligent document checks','Clear compliance tracking','Controlled decisions'], language:'Choose language', back:'Back to sign in', welcome:'Welcome back', registerTitle:'Get started with ProductGuard AI', loginIntro:'Sign in to continue your product review workflow.', registerIntro:'Create an account to begin reviewing product submissions.', fullName:'Full name', fullNamePlaceholder:'Nguyen Van A', identifier:'Email or phone number', email:'Email address', identifierPlaceholder:'Enter your email or phone number', emailPlaceholder:'you@company.com', password:'Password', passwordPlaceholder:'Enter your password', newPasswordPlaceholder:'At least 6 characters', show:'Show password', hide:'Hide password', remember:'Remember me', forgot:'Forgot password?', login:'Sign in', register:'Create account', loggingIn:'Signing in...', registering:'Creating account...', noAccount:'New to ProductGuard AI?', registerLink:'Create an account', loginError:'Sign-in failed. Please check your details.', registerError:'Account creation failed. Please try again.' }
+} as const;
 
 export default function Login() {
   const router = useRouter();
   const [view, setView] = useState<View>('login');
+  const [language, setLanguage] = useState<Language>('vi');
+  const t = copy[language];
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -34,7 +41,7 @@ export default function Login() {
         body: JSON.stringify(view === 'login' ? { identifier: email, password } : { email, password, fullName }),
       }));
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : view === 'login' ? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' : 'Đăng ký tài khoản thất bại.');
+      setError(cause instanceof Error ? cause.message : view === 'login' ? t.loginError : t.registerError);
       setBusy(false);
     }
   };
@@ -63,37 +70,28 @@ export default function Login() {
 
       <section className="auth-brand" aria-label="Guardian ProductGuard AI">
         <div className="guardian-wordmark"><b>guardian</b><small>healthy beauty</small></div>
-        <div className="brand-copy">
-          <strong>ProductGuard AI</strong>
-          <h1>Thẩm định sản phẩm, đơn giản hơn.</h1>
-          <p>AI hỗ trợ thẩm định, giúp bạn đảm bảo tuân thủ nhanh chóng và chính xác.</p>
-          <ul className="brand-points">
-            {['Kiểm tra hồ sơ thông minh','Theo dõi tuân thủ rõ ràng','Quyết định có kiểm soát'].map((item)=><li key={item}><span><Check size={17} strokeWidth={3}/></span>{item}</li>)}
-          </ul>
-        </div>
+        <div className="brand-copy"><strong>ProductGuard AI</strong><h1>{t.headline}</h1><p>{t.promise}</p><ul className="brand-points">{t.benefits.map(item=><li key={item}><span><Check size={17} strokeWidth={3}/></span>{item}</li>)}</ul></div>
         <small className="brand-foot">Guardian Vietnam · Product compliance platform</small>
       </section>
-
       <section className="auth-side">
-        <div className="language" role="group" aria-label="Chọn ngôn ngữ"><button className="active" type="button" aria-pressed="true">VI</button><button type="button" aria-pressed="false">EN</button></div>
+        <div className="language" role="group" aria-label={t.language}>
+          <button className={language==='vi'?'active':''} type="button" aria-pressed={language==='vi'} onClick={()=>setLanguage('vi')}>VI</button>
+          <button className={language==='en'?'active':''} type="button" aria-pressed={language==='en'} onClick={()=>setLanguage('en')}>EN</button>
+        </div>
         <div className="auth-form-shell">
           <div className="mobile-brand"><ShieldCheck size={24}/> ProductGuard AI</div>
-          {view==='register'&&<button className="back" type="button" onClick={()=>{setView('login');setError('')}}><ArrowLeft size={17}/>Quay lại đăng nhập</button>}
-          <header className="auth-head">
-            <h2>{view==='login'?'Chào mừng trở lại':'Bắt đầu cùng ProductGuard AI'}</h2>
-            <p>{view==='login'?'Đăng nhập để tiếp tục quy trình thẩm định.':'Tạo tài khoản để bắt đầu quy trình thẩm định sản phẩm.'}</p>
-          </header>
+          {view==='register'&&<button className="back" type="button" onClick={()=>{setView('login');setError('')}}><ArrowLeft size={17}/>{t.back}</button>}
+          <header className="auth-head"><h2>{view==='login'?t.welcome:t.registerTitle}</h2><p>{view==='login'?t.loginIntro:t.registerIntro}</p></header>
           {error&&<div className="error" role="alert">{error}</div>}
           <form className="auth-form" onSubmit={submit}>
-            {view==='register'&&<label className="field">Họ và tên<span className="input"><UserRound size={19}/><input autoComplete="name" placeholder="Nguyễn Văn A" required value={fullName} onChange={e=>setFullName(e.target.value)}/></span></label>}
-            <label className="field">{view==='login'?'Email hoặc số điện thoại':'Địa chỉ email'}<span className="input"><Mail size={19}/><input type={view==='login'?'text':'email'} autoComplete="email" placeholder={view==='login'?'Nhập email hoặc số điện thoại':'tenban@congty.com'} required value={email} onChange={e=>setEmail(e.target.value)}/></span></label>
-            <label className="field">Mật khẩu<span className="input"><KeyRound size={19}/><input type={showPassword?'text':'password'} autoComplete={view==='login'?'current-password':'new-password'} minLength={view==='register'?6:undefined} placeholder={view==='login'?'Nhập mật khẩu':'Tối thiểu 6 ký tự'} required value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="show-password" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Ẩn mật khẩu':'Hiện mật khẩu'}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></span></label>
-            {view==='login'&&<div className="options"><label className="remember"><input type="checkbox" defaultChecked/>Ghi nhớ đăng nhập</label><button type="button" className="text-button">Quên mật khẩu?</button></div>}
-            <button className="submit" disabled={busy}>{busy&&<Loader2 className="spin" size={19}/>} {busy?(view==='login'?'Đang xác thực...':'Đang tạo tài khoản...'):(view==='login'?'Đăng nhập':'Tạo tài khoản')} {!busy&&<ArrowRight size={20}/>}</button>
+            {view==='register'&&<label className="field">{t.fullName}<span className="input"><UserRound size={19}/><input autoComplete="name" placeholder={t.fullNamePlaceholder} required value={fullName} onChange={event=>setFullName(event.target.value)}/></span></label>}
+            <label className="field">{view==='login'?t.identifier:t.email}<span className="input"><Mail size={19}/><input type={view==='login'?'text':'email'} autoComplete="email" placeholder={view==='login'?t.identifierPlaceholder:t.emailPlaceholder} required value={email} onChange={event=>setEmail(event.target.value)}/></span></label>
+            <label className="field">{t.password}<span className="input"><KeyRound size={19}/><input type={showPassword?'text':'password'} autoComplete={view==='login'?'current-password':'new-password'} minLength={view==='register'?6:undefined} placeholder={view==='login'?t.passwordPlaceholder:t.newPasswordPlaceholder} required value={password} onChange={event=>setPassword(event.target.value)}/><button type="button" className="show-password" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword?t.hide:t.show}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></span></label>
+            {view==='login'&&<div className="options"><label className="remember"><input type="checkbox" defaultChecked/>{t.remember}</label><button type="button" className="text-button">{t.forgot}</button></div>}
+            <button className="submit" disabled={busy}>{busy&&<Loader2 className="spin" size={19}/>} {busy?(view==='login'?t.loggingIn:t.registering):(view==='login'?t.login:t.register)} {!busy&&<ArrowRight size={20}/>}</button>
           </form>
-          {view==='login'&&<p className="switch">Chưa có tài khoản? <button type="button" onClick={()=>{setView('register');setError('')}}>Đăng ký thành viên</button></p>}
+          {view==='login'&&<p className="switch">{t.noAccount} <button type="button" onClick={()=>{setView('register');setError('')}}>{t.registerLink}</button></p>}
         </div>
-      </section>
-    </main>
+      </section>    </main>
   );
 }
