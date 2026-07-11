@@ -3,6 +3,7 @@ export type Language='vi'|'en';
 const vi:Record<string,string>={
  'Dashboard':'Bảng điều khiển','Products':'Sản phẩm','New submission':'Tạo hồ sơ mới','Tasks':'Công việc','Reports':'Báo cáo','Demo mode':'Chế độ demo','Settings':'Cài đặt',
  'Welcome to ProductGuard AI':'Chào mừng đến với ProductGuard AI','Category Manager':'Quản lý ngành hàng','AI-Powered Compliance':'Tuân thủ được hỗ trợ bởi AI',
+ 'Commercial Reviewer':'Người duyệt thương mại','Ecommerce Reviewer':'Người duyệt sàn TMĐT','Compliance Reviewer':'Chuyên viên tuân thủ','Administrator':'Quản trị viên','Log out':'Đăng xuất',
  'Total products':'Tổng số sản phẩm','Awaiting AI':'Chờ AI xử lý','Awaiting approval':'Chờ phê duyệt','Compliance review':'Cần xem xét tuân thủ','Approved':'Đã phê duyệt','vs last week':'so với tuần trước',
  'Product Submissions':'Hồ sơ sản phẩm','Create new submission':'Tạo hồ sơ mới','Search product, brand, supplier…':'Tìm sản phẩm, thương hiệu, nhà cung cấp…','Status':'Trạng thái','Category':'Danh mục','Risk level':'Mức rủi ro','All':'Tất cả','Filters':'Bộ lọc',
  'Product':'Sản phẩm','Brand':'Thương hiệu','Supplier':'Nhà cung cấp','Completion':'Độ hoàn thiện','Risk':'Rủi ro','Last updated':'Cập nhật lần cuối','Action':'Thao tác','Low':'Thấp','Medium':'Trung bình','High':'Cao','View all products':'Xem tất cả sản phẩm',
