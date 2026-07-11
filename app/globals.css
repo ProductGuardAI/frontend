@@ -144,3 +144,23 @@ main{padding:32px 28px;max-width:none}.dashboard-page{display:grid;gap:20px}.das
 .app input::placeholder,.app textarea::placeholder{color:#57534e;opacity:1}
 .app .badge{font-weight:850}
 @media(max-width:760px){.dashboard-stat small{color:#292524}.dashboard-filters label small{font-size:11px}.app-footer{color:#44403c}}
+/* Document-first AI product intake */
+.document-first-form{max-width:980px}.document-first-form .form-card{padding:28px}.document-first-form .step-title{margin-bottom:18px}.document-first-form .step-title>span{background:linear-gradient(135deg,#fff0df,#ffd8b1);color:#c2410c}.ai-intake-note{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;padding:15px 17px;border:1px solid #fed7aa;border-radius:11px;background:#fff7ed;color:#292524}.ai-intake-note>svg{flex:none;color:#ea580c}.ai-intake-note strong{display:block;margin-bottom:4px}.ai-intake-note p{margin:0;color:#57534e;font-size:13px;line-height:1.5}.document-first-form .drop{padding:38px 28px}.document-first-form .drop strong{font-size:16px;color:#1c1917}.document-first-form .submit-bar{background:#fff7ed;border-color:#fed7aa}@media(max-width:760px){.document-first-form .form-card{padding:20px}.ai-intake-note{padding:13px}.document-first-form .submit-bar{display:grid}.document-first-form .submit-bar .button{width:100%}}
+/* Official ProductGuard AI brand registration */
+.productguard-mark{display:flex;align-items:center;gap:15px;width:min(360px,100%);min-height:102px;padding:20px 24px;border:1px solid rgba(255,255,255,.72);border-radius:14px;background:#e95b0c;color:#fff;box-shadow:0 8px 24px rgba(124,45,18,.14)}
+.productguard-mark>svg{width:35px;height:35px;flex:none;stroke-width:2.2}
+.productguard-mark>span{display:grid;gap:4px;min-width:0}
+.productguard-mark strong{font:800 23px/1.1 'DM Sans',sans-serif;letter-spacing:-.35px;color:#fff;white-space:nowrap}
+.productguard-mark small{font:750 16px/1.2 'DM Sans',sans-serif;letter-spacing:0;color:#fff;opacity:1;white-space:nowrap}
+.productguard-mark.inverse{background:rgba(196,65,7,.38);border-color:rgba(255,255,255,.62);box-shadow:none}
+.productguard-mark.compact{width:100%;min-height:78px;padding:14px 16px;gap:11px;border-radius:12px}
+.productguard-mark.compact>svg{width:29px;height:29px}
+.productguard-mark.compact strong{font-size:16px}
+.productguard-mark.compact small{font-size:12px}
+.app>aside>.productguard-mark{margin-top:auto}
+.auth-brand .productguard-mark{margin-bottom:24px}
+.mobile-brand .productguard-mark{min-height:72px;padding:13px 16px;border-color:#f97316}
+.mobile-brand .productguard-mark>svg{width:27px;height:27px}
+.mobile-brand .productguard-mark strong{font-size:17px}
+.mobile-brand .productguard-mark small{font-size:12px}
+@media(max-width:420px){.productguard-mark{padding:15px;gap:11px}.productguard-mark strong{font-size:18px}.productguard-mark small{font-size:12px}.productguard-mark>svg{width:29px;height:29px}}

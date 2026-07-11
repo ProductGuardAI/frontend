@@ -1,7 +1,24 @@
 import type { ReactNode } from "react";
-import { PackageSearch, RefreshCw } from "lucide-react";
+import { PackageSearch, RefreshCw, ShieldCheck } from "lucide-react";
 
-export const human = (s: any) => {
+export function ProductGuardMark({
+  tone = "orange",
+  compact = false,
+}: {
+  tone?: "orange" | "inverse";
+  compact?: boolean;
+}) {
+  return (
+    <div className={`productguard-mark ${tone} ${compact ? "compact" : ""}`} aria-label="ProductGuard AI — AI-Powered Compliance">
+      <ShieldCheck aria-hidden="true" />
+      <span>
+        <strong>ProductGuard AI</strong>
+        <small>AI-Powered Compliance</small>
+      </span>
+    </div>
+  );
+}
+export const human = (s: unknown) => {
   if (typeof s !== "string") return "";
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 };

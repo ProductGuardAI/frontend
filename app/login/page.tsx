@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, KeyRound, Loader2, Mail, ShieldCheck, UserRound } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, KeyRound, Loader2, Mail, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/components/api';
+import { ProductGuardMark } from '@/components/shared';
 
 interface AuthResponse { token: string; user: { id: string; email: string; fullName: string; role: string } }
 type View = 'login' | 'register';
@@ -70,7 +71,7 @@ export default function Login() {
 
       <section className="auth-brand" aria-label="Guardian ProductGuard AI">
         <div className="guardian-wordmark"><b>guardian</b><small>healthy beauty</small></div>
-        <div className="brand-copy"><strong>ProductGuard AI</strong><h1>{t.headline}</h1><p>{t.promise}</p><ul className="brand-points">{t.benefits.map(item=><li key={item}><span><Check size={17} strokeWidth={3}/></span>{item}</li>)}</ul></div>
+        <div className="brand-copy"><ProductGuardMark tone="inverse"/><h1>{t.headline}</h1><p>{t.promise}</p><ul className="brand-points">{t.benefits.map(item=><li key={item}><span><Check size={17} strokeWidth={3}/></span>{item}</li>)}</ul></div>
         <small className="brand-foot">Guardian Vietnam · Product compliance platform</small>
       </section>
       <section className="auth-side">
@@ -79,7 +80,7 @@ export default function Login() {
           <button className={language==='en'?'active':''} type="button" aria-pressed={language==='en'} onClick={()=>setLanguage('en')}>EN</button>
         </div>
         <div className="auth-form-shell">
-          <div className="mobile-brand"><ShieldCheck size={24}/> ProductGuard AI</div>
+          <div className="mobile-brand"><ProductGuardMark/></div>
           {view==='register'&&<button className="back" type="button" onClick={()=>{setView('login');setError('')}}><ArrowLeft size={17}/>{t.back}</button>}
           <header className="auth-head"><h2>{view==='login'?t.welcome:t.registerTitle}</h2><p>{view==='login'?t.loginIntro:t.registerIntro}</p></header>
           {error&&<div className="error" role="alert">{error}</div>}

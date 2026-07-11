@@ -8,7 +8,6 @@ import {
   PackageSearch,
   PlusCircle,
   Settings,
-  ShieldCheck,
   FlaskConical,
   Menu,
   X,
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLanguage } from "./i18n";
-import { human } from "./shared";
+import { human, ProductGuardMark } from "./shared";
 
 export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -100,10 +99,7 @@ export function Shell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="legal productguard-panel">
-          <ShieldCheck size={25} />
-          <p><strong>ProductGuard AI</strong><br /><small>{t('AI-Powered Compliance')}</small></p>
-        </div>
+        <ProductGuardMark tone="inverse" compact />
       </aside>
       <header>
         <button className="icon mobile" onClick={() => setOpen(!open)}>
