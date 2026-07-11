@@ -78,7 +78,14 @@ export function Shell({ children }: { children: ReactNode }) {
   const {language,setLanguage,t}=useLanguage();
 
   const userJson = localStorage.getItem('user');
-  const user = userJson ? JSON.parse(userJson) : null;
+  let user = null;
+  if (userJson && userJson !== 'undefined') {
+    try {
+      user = JSON.parse(userJson);
+    } catch {
+      user = null;
+    }
+  }
   const fullName = user?.fullName || 'Nhan Vien';
   const role = user?.role || 'commercial_reviewer';
 
