@@ -217,7 +217,7 @@ export function Login() {
         .back-link:hover {
           color: #fff;
         }
-        .spinner {
+        .auth-spinner {
           animation: spin 1s linear infinite;
         }
         @keyframes spin {
@@ -272,7 +272,7 @@ export function Login() {
             </div>
 
             <button type="submit" className="login-btn" disabled={busy}>
-              {busy ? <Loader2 className="spinner" size={18} /> : null}
+              {busy ? <Loader2 className="auth-spinner" size={18} /> : null}
               {busy ? 'Đang xác thực...' : 'Đăng nhập'}
               {!busy ? <ArrowRight size={18} /> : null}
             </button>
@@ -332,7 +332,7 @@ export function Login() {
             </div>
 
             <button type="submit" className="login-btn" disabled={busy}>
-              {busy ? <Loader2 className="spinner" size={18} /> : null}
+              {busy ? <Loader2 className="auth-spinner" size={18} /> : null}
               {busy ? 'Đang khởi tạo tài khoản...' : 'Đăng ký tài khoản'}
               {!busy ? <ArrowRight size={18} /> : null}
             </button>
