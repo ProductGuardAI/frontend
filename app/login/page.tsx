@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/components/api';
 import { ProductGuardMark } from '@/components/shared';
 
-interface AuthResponse { token: string; user: { id: string; email: string; fullName: string; role: string } }
+interface AuthResponse { token: string; refreshToken?: string; user: { id: string; email: string; fullName: string; role: string } }
 type View = 'login' | 'register' | 'forgot' | 'reset';
 type Language = 'vi' | 'en';
 const copy = {
@@ -33,6 +33,9 @@ export default function Login() {
 
   const finish = (data: AuthResponse) => {
     localStorage.setItem('token', data.token);
+    if (data.refreshToken) {
+      localStorage.setItem('refreshToken', data.refreshToken);
+    }
     localStorage.setItem('user', JSON.stringify(data.user));
     window.location.href = '/dashboard';
   };

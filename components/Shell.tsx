@@ -51,6 +51,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     window.location.href = '/login';
   };
