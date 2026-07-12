@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, use, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   CheckCircle2,
   Check,
   MessageSquare,
   ShieldAlert,
+  AlertCircle,
 } from "lucide-react";
 import { api, post } from "@/components/api";
 import { Badge, ErrorBox, human, Score, Spinner } from "@/components/shared";
 import { useLoad } from "@/components/hooks";
 import type { Product } from "@/components/types";
 
-// Import modularized components
 import { OverviewTab } from "@/components/review/OverviewTab";
 import { ProductDataTab } from "@/components/review/ProductDataTab";
 import { DocumentsTab } from "@/components/review/DocumentsTab";
@@ -55,6 +55,16 @@ export default function ReviewPage() {
     }
   }, []);
 
+  const showNotice = (msg: string) => {
+    setNotice(msg);
+    setTimeout(() => setNotice(""), 4000);
+  };
+
+  const showError = (msg: string) => {
+    setError(msg);
+    setTimeout(() => setError(""), 6000);
+  };
+
   const act = async (action: string, notes = "") => {
     setError("");
     try {
@@ -64,14 +74,13 @@ export default function ReviewPage() {
         role: user?.role || "compliance_reviewer",
         notes,
       });
-      setNotice(`${human(action)} recorded`);
+      showNotice(`${human(action)} recorded`);
       setModal("");
       q.reload();
-      setTimeout(() => setNotice(""), 4000);
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || `Failed to perform action: ${action}`);
-      setTimeout(() => setError(""), 6000);
+      const msg = err.message || `Failed to perform action: ${action}`;
+      showError(msg);
+      setModal("");
     }
   };
 
@@ -79,6 +88,10 @@ export default function ReviewPage() {
   if (q.error || !q.data) return <ErrorBox message={q.error} retry={q.reload} />;
 
   const p = q.data;
+
+  const hasBlockingFindings = p.findings?.some(
+    (f) => f.blocking && ["open", "needs_human_review", "confirmed"].includes(f.status)
+  );
 
   return (
     <>
@@ -90,7 +103,7 @@ export default function ReviewPage() {
       )}
       {error && (
         <div className="toast" style={{ backgroundColor: '#a42335' }}>
-          <ShieldAlert />
+          <AlertCircle />
           {error}
         </div>
       )}
@@ -119,7 +132,13 @@ export default function ReviewPage() {
       <div className="action-row">
         <button
           className="button green"
-          onClick={() => act("approve", "Approved after human review")}
+          onClick={() => {
+            if (hasBlockingFindings) {
+              setModal("approve");
+            } else {
+              act("approve", "Approved after human review");
+            }
+          }}
         >
           <Check />
           Approve
@@ -133,9 +152,7 @@ export default function ReviewPage() {
         </button>
         <button
           className="button secondary danger-text"
-          onClick={() =>
-            act("escalate_to_compliance", "Escalated for specialist review")
-          }
+          onClick={() => setModal("escalate_to_compliance")}
         >
           <ShieldAlert />
           Escalate
