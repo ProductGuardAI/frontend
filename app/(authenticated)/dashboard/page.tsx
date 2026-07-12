@@ -7,11 +7,10 @@ import {
   Clock3,
   Eye,
   FileCheck2,
-  MoreHorizontal,
   Plus,
   Search,
   ShieldAlert,
-  SlidersHorizontal,
+  PackageSearch,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,21 +42,17 @@ export default function Dashboard() {
   if (d.error || !d.data) return <ErrorBox message={d.error} retry={d.reload} />;
 
   const [m, products] = d.data;
-  const stats = [
-    [FileCheck2, "Total products", m.total, "+12", "orange"],
-    [Clock3, "Awaiting AI", m.awaitingAi, "+4", "orange"],
-    [Eye, "Awaiting approval", m.ready, "+6", "amber"],
-    [ShieldAlert, "Compliance review", m.complianceReview, "+2", "red"],
-    [
-      CheckCircle2,
-      "Approved",
-      products.filter((p) => p.status === 'approved' || p.status === 'ready_for_approval').length,
-      "+10",
-      "green",
-    ],
-  ] as const;
+  const approvedCount = products.filter((p) => p.status === 'approved' || p.status === 'ready_for_approval').length;
 
-  const categories = [...new Set(products.map((p) => p.category))];
+  const stats = [
+    { Icon: FileCheck2, label: "Total products", value: m.total, tone: "orange" },
+    { Icon: Clock3, label: "Awaiting AI", value: m.awaitingAi, tone: "orange" },
+    { Icon: Eye, label: "Awaiting approval", value: m.ready, tone: "amber" },
+    { Icon: ShieldAlert, label: "Compliance review", value: m.complianceReview, tone: "red" },
+    { Icon: CheckCircle2, label: "Approved", value: approvedCount, tone: "green" },
+  ];
+
+  const categories = [...new Set(products.map((p) => p.category))].sort();
   const statuses = [...new Set(products.map((p) => p.status))];
   const riskLevel = (score: number) => score >= 60 ? 'high' : score >= 25 ? 'medium' : 'low';
 
@@ -69,10 +64,20 @@ export default function Dashboard() {
     return matchesSearch && matchesStatus && matchesCategory && matchesRisk;
   });
 
+  const clearFilters = () => {
+    setSearch("");
+    setStatusFilter("");
+    setCategoryFilter("");
+    setRiskFilter("");
+  };
+
+  const hasFilters = search || statusFilter || categoryFilter || riskFilter;
+
   return (
     <div className="dashboard-page">
+      {/* Stats */}
       <section className="stats dashboard-stats">
-        {stats.map(([Icon, label, value, trend, tone]) => (
+        {stats.map(({ Icon, label, value, tone }) => (
           <article className="stat dashboard-stat" key={label}>
             <span className={`stat-icon ${tone}`}>
               <Icon />
@@ -80,19 +85,25 @@ export default function Dashboard() {
             <div>
               <small>{t(label)}</small>
               <strong>{value}</strong>
-              <em>
-                <TrendingUp /> {trend} {t('vs last week')}
-              </em>
+              {value > 0 && (
+                <em>
+                  <TrendingUp size={11} /> {t('vs last week')}
+                </em>
+              )}
             </div>
           </article>
         ))}
       </section>
 
+      {/* Submissions Table */}
       <section className="card submissions-card">
         <div className="submissions-title">
-          <h2>{t('Product Submissions')}</h2>
+          <div>
+            <h2>{t('Product Submissions')}</h2>
+            <p>{filtered.length} {t('of')} {products.length} {t('products')}</p>
+          </div>
           <Link className="button" href="/products/new">
-            <Plus />
+            <Plus size={16} />
             {t('Create new submission')}
           </Link>
         </div>
@@ -129,102 +140,115 @@ export default function Dashboard() {
               <option value="high">{t('High')}</option>
             </select>
           </label>
-          <Link className="button secondary filter-button" href="/products">
-            <SlidersHorizontal />
-            {t('Filters')}
-          </Link>
+          {hasFilters && (
+            <button className="button ghost clear-filters" onClick={clearFilters}>
+              {t('Clear')}
+            </button>
+          )}
         </div>
 
         <div className="table-wrap dashboard-table">
-          <table>
-            <thead>
-              <tr>
-                <th>{t('Product')}</th>
-                <th>{t('Brand')}</th>
-                <th>{t('Supplier')}</th>
-                <th>{t('Category')}</th>
-                <th>{t('Status')}</th>
-                <th>{t('Completion')}</th>
-                <th>{t('Risk')}</th>
-                <th>{t('Last updated')}</th>
-                <th>{t('Action')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p) => {
-                const r = risk(p.riskScore);
-                return (
-                  <tr key={p.id}>
-                    <td>
-                      <Link className="product-link" href={`/products/${p.id}`}>
-                        <span>{p.name.slice(0, 2).toUpperCase()}</span>
-                        <div>
-                          <strong>{p.name}</strong>
-                          <small>SKU: {p.id.toUpperCase()}</small>
+          {filtered.length === 0 ? (
+            <div className="dashboard-empty">
+              <PackageSearch size={40} />
+              <p>{hasFilters ? t('No products match your filters') : t('No products yet')}</p>
+              {hasFilters && (
+                <button className="button secondary" onClick={clearFilters}>
+                  {t('Clear filters')}
+                </button>
+              )}
+            </div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>{t('Product')}</th>
+                  <th>{t('Supplier')}</th>
+                  <th>{t('Category')}</th>
+                  <th>{t('Status')}</th>
+                  <th className="col-center">{t('Completion')}</th>
+                  <th className="col-center">{t('Risk')}</th>
+                  <th className="col-right">{t('Last updated')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((p) => {
+                  const r = risk(p.riskScore);
+                  return (
+                    <tr key={p.id}>
+                      <td>
+                        <Link className="product-link" href={`/products/${p.id}`}>
+                          <span>{p.name.slice(0, 2).toUpperCase()}</span>
+                          <div>
+                            <strong>{p.name}</strong>
+                            <small>{p.brand}</small>
+                          </div>
+                        </Link>
+                      </td>
+                      <td>{p.supplier?.name ?? "—"}</td>
+                      <td>{p.category}</td>
+                      <td>
+                        <Badge>{t(human(p.status))}</Badge>
+                      </td>
+                      <td className="col-center">
+                        <div
+                          className={`completion-ring ${p.completenessScore < 60 ? 'critical' : ''}`}
+                          style={{ "--completion": `${p.completenessScore * 3.6}deg` } as React.CSSProperties}
+                        >
+                          <b>{p.completenessScore}%</b>
                         </div>
-                      </Link>
-                    </td>
-                    <td>{p.brand}</td>
-                    <td>{p.supplier?.name}</td>
-                    <td>{p.category}</td>
-                    <td>
-                      <Badge>{t(human(p.status))}</Badge>
-                    </td>
-                    <td>
-                      <div
-                        className={`completion-ring ${p.completenessScore < 60 ? 'critical' : ''}`}
-                        style={{ "--completion": `${p.completenessScore * 3.6}deg` } as React.CSSProperties}
-                      >
-                        <b>{p.completenessScore}%</b>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`risk-label ${r.tone}`}>
-                        <i />
-                        {t(r.label)}
-                      </span>
-                    </td>
-                    <td>
-                      {new Date(p.updatedAt).toLocaleDateString(
-                        language === 'vi' ? 'vi-VN' : 'en-US'
-                      )}
-                    </td>
-                    <td>
-                      <Link
-                        className="more-action"
-                        href={`/products/${p.id}`}
-                        aria-label={`Open ${p.name}`}
-                      >
-                        <MoreHorizontal />
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="col-center">
+                        <span className={`risk-label ${r.tone}`}>
+                          <i />
+                          {t(r.label)}
+                        </span>
+                      </td>
+                      <td className="col-right">
+                        <small className="date-cell">
+                          {new Date(p.updatedAt).toLocaleDateString(
+                            language === 'vi' ? 'vi-VN' : 'en-US',
+                            { day: '2-digit', month: 'short' }
+                          )}
+                        </small>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
-        <Link className="view-all" href="/products">
-          {t('View all products')} <ArrowRight />
-        </Link>
+        {filtered.length > 0 && (
+          <Link className="view-all" href="/products">
+            {t('View all products')} <ArrowRight size={16} />
+          </Link>
+        )}
       </section>
 
+      {/* Recent Activity */}
       <section className="card compact-activity">
         <div className="card-head">
           <div>
             <h2>{t('Recent activity')}</h2>
             <p>{t('Latest automated and reviewer events')}</p>
           </div>
-          <Activity />
+          <Activity size={20} />
         </div>
         <div>
-          {m.recentActivity.slice(0, 3).map((a: any) => (
-            <span key={a.id}>
-              <i />
-              <strong>{t(human(a.action))}</strong>
-              <small>{a.notes}</small>
+          {m.recentActivity.length > 0 ? (
+            m.recentActivity.slice(0, 6).map((a: any) => (
+              <span key={a.id}>
+                <i />
+                <strong>{t(human(a.action))}</strong>
+                <small>{a.notes}</small>
+              </span>
+            ))
+          ) : (
+            <span className="activity-empty">
+              <small>{t('No recent activity')}</small>
             </span>
-          ))}
+          )}
         </div>
       </section>
 

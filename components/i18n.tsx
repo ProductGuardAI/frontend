@@ -61,6 +61,13 @@ const vi: Record<string, string> = {
   'Open approval workspace': 'Mở không gian phê duyệt',
   'Decision support only': 'Chỉ hỗ trợ quyết định',
   'Human review required': 'Cần người đánh giá',
+  'of': 'trong',
+  'products': 'sản phẩm',
+  'Clear': 'Xóa lọc',
+  'Clear filters': 'Xóa bộ lọc',
+  'No products match your filters': 'Không có sản phẩm phù hợp bộ lọc',
+  'No products yet': 'Chưa có sản phẩm nào',
+  'No recent activity': 'Chưa có hoạt động gần đây',
 };
 
 type I18n = { language: Language; setLanguage: (v: Language) => void; t: (value: string) => string };
