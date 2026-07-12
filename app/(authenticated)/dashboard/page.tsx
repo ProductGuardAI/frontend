@@ -20,7 +20,7 @@ import { Badge, ErrorBox, Spinner, human } from "@/components/shared";
 import { useLoad } from "@/components/hooks";
 import type { DashboardData, Product } from "@/components/types";
 import { useLanguage } from "@/components/i18n";
-import React from "react";
+import React, { useState } from "react";
 
 const risk = (score: number) =>
   score >= 60
@@ -34,6 +34,10 @@ export default function Dashboard() {
   const d = useLoad(() =>
     Promise.all([api<DashboardData>("/dashboard"), api<Product[]>("/products")])
   );
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [riskFilter, setRiskFilter] = useState("");
 
   if (d.loading) return <Spinner />;
   if (d.error || !d.data) return <ErrorBox message={d.error} retry={d.reload} />;
@@ -52,6 +56,18 @@ export default function Dashboard() {
       "green",
     ],
   ] as const;
+
+  const categories = [...new Set(products.map((p) => p.category))];
+  const statuses = [...new Set(products.map((p) => p.status))];
+  const riskLevel = (score: number) => score >= 60 ? 'high' : score >= 25 ? 'medium' : 'low';
+
+  const filtered = products.filter((p) => {
+    const matchesSearch = !search || `${p.name} ${p.brand} ${p.supplier?.name ?? ''}`.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = !statusFilter || p.status === statusFilter;
+    const matchesCategory = !categoryFilter || p.category === categoryFilter;
+    const matchesRisk = !riskFilter || riskLevel(p.riskScore) === riskFilter;
+    return matchesSearch && matchesStatus && matchesCategory && matchesRisk;
+  });
 
   return (
     <div className="dashboard-page">
@@ -84,24 +100,33 @@ export default function Dashboard() {
         <div className="dashboard-filters">
           <label className="search">
             <Search />
-            <input placeholder={t('Search product, brand, supplier…')} />
+            <input placeholder={t('Search product, brand, supplier…')} value={search} onChange={(e) => setSearch(e.target.value)} />
           </label>
           <label>
             <small>{t('Status')}</small>
-            <select>
-              <option>{t('All')}</option>
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <option value="">{t('All')}</option>
+              {statuses.map((s) => (
+                <option key={s} value={s}>{t(human(s))}</option>
+              ))}
             </select>
           </label>
           <label>
             <small>{t('Category')}</small>
-            <select>
-              <option>{t('All')}</option>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              <option value="">{t('All')}</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
             </select>
           </label>
           <label>
             <small>{t('Risk level')}</small>
-            <select>
-              <option>{t('All')}</option>
+            <select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)}>
+              <option value="">{t('All')}</option>
+              <option value="low">{t('Low')}</option>
+              <option value="medium">{t('Medium')}</option>
+              <option value="high">{t('High')}</option>
             </select>
           </label>
           <Link className="button secondary filter-button" href="/products">
@@ -126,7 +151,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => {
+              {filtered.map((p) => {
                 const r = risk(p.riskScore);
                 return (
                   <tr key={p.id}>

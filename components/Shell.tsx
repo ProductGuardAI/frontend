@@ -8,7 +8,6 @@ import {
   PackageSearch,
   PlusCircle,
   Settings,
-  FlaskConical,
   Menu,
   X,
   Bell,
@@ -62,7 +61,6 @@ export function Shell({ children }: { children: ReactNode }) {
     [PlusCircle, "New submission", "/products/new", ""],
     [ClipboardList, "Tasks", "/products", "tasks"],
     [BarChart3, "Reports", "/dashboard", "reports"],
-    ...(process.env.NEXT_PUBLIC_DEMO_MODE === "true" || true ? [[FlaskConical, "Demo mode", "/demo", ""] as [any, string, string, string]] : []),
     [Settings, "Settings", "/settings", ""],
   ];
 

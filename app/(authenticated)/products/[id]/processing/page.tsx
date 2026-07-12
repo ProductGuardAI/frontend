@@ -100,7 +100,7 @@ export default function Processing() {
           </div>
         )}
       </div>
-      <small>Demo processing is deterministic. Results remain predictable across resets.</small>
+      <small>AI processing extracts product data and checks compliance from your uploaded documents.</small>
     </div>
   );
 }

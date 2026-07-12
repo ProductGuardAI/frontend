@@ -26,7 +26,7 @@ export function DocumentsTab({ p }: { p: Product }) {
             </div>
             <Badge>{human(d.processingStatus)}</Badge>
             <a
-              href={`http://localhost:4000${d.fileUrl}`}
+              href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? 'http://localhost:4000'}${d.fileUrl}`}
               target="_blank"
               rel="noreferrer"
             >

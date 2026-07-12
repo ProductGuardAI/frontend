@@ -35,7 +35,7 @@ export default function SettingsPage() {
           <Database />
           <div>
             <h2>Storage</h2>
-            <p>JSON demo store · Prisma schema ready for PostgreSQL</p>
+            <p>PostgreSQL via TypeORM · File uploads on server</p>
             <span className="status-dot">Available</span>
           </div>
         </section>
